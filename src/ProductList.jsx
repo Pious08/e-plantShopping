@@ -280,7 +280,6 @@ function ProductList({ onHomeClick }) {
 
     return (
         <div>
-            {/* Navbar - Always visible */}
             <div className="navbar" style={styleObj}>
                 <div className="tag">
                     <div className="luxury">
@@ -324,11 +323,7 @@ function ProductList({ onHomeClick }) {
                     </div>
                 </div>
             </div>
-
-            {/* Conditional Content - Cart or Products */}
-            {showCart ? (
-                <CartItem onContinueShopping={handleContinueShopping} />
-            ) : (
+            {!showCart ? (
                 <div className="product-grid">
                     {plantsArray.map((category, index) => (
                         <div key={index}>
@@ -359,6 +354,8 @@ function ProductList({ onHomeClick }) {
                         </div>
                     ))}
                 </div>
+            ) : (
+                <CartItem onContinueShopping={handleContinueShopping} />
             )}
         </div>
     );
