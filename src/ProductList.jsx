@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './ProductList.css';
 import CartItem from './CartItem';
@@ -7,15 +7,11 @@ import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false);
+    const [addedToCart, setAddedToCart] = useState({});
     
     // Redux hooks
     const dispatch = useDispatch();
     const cartItems = useSelector(state => state.cart.items);
-
-    // Check if item is in cart based on cartItems from Redux
-    const isInCart = (plantName) => {
-        return cartItems.some(item => item.name === plantName);
-    };
 
     const plantsArray = [
         {
@@ -271,6 +267,10 @@ function ProductList({ onHomeClick }) {
 
     const handleAddToCart = (product) => {
         dispatch(addItem(product));
+        setAddedToCart((prevState) => ({
+            ...prevState,
+            [product.name]: true,
+        }));
     };
 
     const handleContinueShopping = (e) => {
@@ -323,10 +323,7 @@ function ProductList({ onHomeClick }) {
                     </div>
                 </div>
             </div>
-            
-            {showCart ? (
-                <CartItem onContinueShopping={handleContinueShopping} />
-            ) : (
+            {!showCart ? (
                 <div className="product-grid">
                     {plantsArray.map((category, index) => (
                         <div key={index}>
@@ -345,11 +342,11 @@ function ProductList({ onHomeClick }) {
                                         <div className="product-description">{plant.description}</div>
                                         <div className="product-cost">{plant.cost}</div>
                                         <button
-                                            className={`product-button ${isInCart(plant.name) ? 'added-to-cart' : ''}`}
+                                            className="product-button"
                                             onClick={() => handleAddToCart(plant)}
-                                            disabled={isInCart(plant.name)}
+                                            disabled={addedToCart[plant.name]}
                                         >
-                                            {isInCart(plant.name) ? 'Added to Cart' : 'Add to Cart'}
+                                            {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
                                         </button>
                                     </div>
                                 ))}
@@ -357,6 +354,8 @@ function ProductList({ onHomeClick }) {
                         </div>
                     ))}
                 </div>
+            ) : (
+                <CartItem onContinueShopping={handleContinueShopping} />
             )}
         </div>
     );
