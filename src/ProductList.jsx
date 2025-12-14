@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './ProductList.css';
 import CartItem from './CartItem';
@@ -7,11 +7,15 @@ import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false);
-    const [addedToCart, setAddedToCart] = useState({});
     
     // Redux hooks
     const dispatch = useDispatch();
     const cartItems = useSelector(state => state.cart.items);
+
+    // Check if item is in cart based on cartItems from Redux
+    const isInCart = (plantName) => {
+        return cartItems.some(item => item.name === plantName);
+    };
 
     const plantsArray = [
         {
@@ -267,10 +271,6 @@ function ProductList({ onHomeClick }) {
 
     const handleAddToCart = (product) => {
         dispatch(addItem(product));
-        setAddedToCart((prevState) => ({
-            ...prevState,
-            [product.name]: true,
-        }));
     };
 
     const handleContinueShopping = (e) => {
@@ -344,9 +344,9 @@ function ProductList({ onHomeClick }) {
                                         <button
                                             className="product-button"
                                             onClick={() => handleAddToCart(plant)}
-                                            disabled={addedToCart[plant.name]}
+                                            disabled={isInCart(plant.name)}
                                         >
-                                            {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                                            {isInCart(plant.name) ? 'Added to Cart' : 'Add to Cart'}
                                         </button>
                                     </div>
                                 ))}
